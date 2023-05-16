@@ -8,10 +8,16 @@
 using namespace std;
 
 DWORD WINAPI clientReceive(LPVOID lpParam) { 
-
+	char login[64] = " ";
 	char buffer[1024] = { 0 };
 	SOCKET server = *(SOCKET*)lpParam;
 	
+	
+	if (recv(server, login, sizeof(buffer), 0) == SOCKET_ERROR) {
+		
+		cout << "Ошибка подключения к серверу " << WSAGetLastError() << endl;
+		return -1;
+	}
 	while (true) {
 		if (recv(server, buffer, sizeof(buffer), 0) == SOCKET_ERROR) {
 			cout << "Ошибка подключения к серверу " << WSAGetLastError() << endl;
@@ -21,7 +27,11 @@ DWORD WINAPI clientReceive(LPVOID lpParam) {
 			cout << "Клиент отключился" << endl;
 			break;
 		}
-		cout << "Собеседник - " << buffer << endl;
+		if (strlen(buffer) != 0) {
+			login[strlen(login) - 1] = ' ';
+			buffer[strlen(buffer) - 1] = ' '; // убирание перевода строки для нормального вывода
+			cout << login <<" - " << buffer << endl;
+		};
 		memset(buffer, 0, sizeof(buffer));
 	}
 	return 1;
