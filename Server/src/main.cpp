@@ -32,10 +32,10 @@ int main(){
 	int clientAddrSize2 = sizeof(clientAddr2);
 	
 	
-    if (((client1 = accept(server, (SOCKADDR*)&clientAddr1, &clientAddrSize1)) != INVALID_SOCKET) && ((client2 = accept(server, (SOCKADDR*)&clientAddr2, &clientAddrSize2)) != INVALID_SOCKET)) {
+    if (((client1 = accept(server, (SOCKADDR*)&clientAddr1, &clientAddrSize1)) != INVALID_SOCKET) && ((client2 = accept(server, (SOCKADDR*)&clientAddr2, &clientAddrSize2)) != INVALID_SOCKET)) { // проверка подключения двух клиентов
     
 		clients * d = new clients{ client1, client2 };
-		clients* d1 = new clients{ client2, client1 };
+		clients* d1 = new clients{ client2, client1 }; // создание двух структур с разной позицией сокетов для удобства
         cout << "Оба клиента подключены успешно!" << endl;
 
         DWORD tid1;
@@ -55,20 +55,21 @@ int main(){
         HANDLE t4 = CreateThread(NULL, 0, serverSend, (void*)d1, 0, &tid2);
 		if (t2 == NULL) {
 			cout << "Ошибка создания потока" << WSAGetLastError() << endl;
-		}
+		} // запуски потоков для двух клиентов приема и передачи сообщений
         
 		WaitForSingleObject(t1, INFINITE);
 		WaitForSingleObject(t2, INFINITE);
 		WaitForSingleObject(t3, INFINITE);
-		WaitForSingleObject(t4, INFINITE);
+		WaitForSingleObject(t4, INFINITE); // ожидание потоков
 
         closesocket(client1);
-        closesocket(client2);
+        closesocket(client2); // закрытие сокетов
         if (closesocket(server) == SOCKET_ERROR) { //Ошибка закрытия сокета
 			cout << "Закрытие сокета произошло с ошибкой" << WSAGetLastError() << endl;
 			return -1;
 		}
         WSACleanup();
 		delete d;
+		delete d1;
     }
 }
