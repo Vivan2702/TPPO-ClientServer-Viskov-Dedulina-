@@ -15,32 +15,32 @@ using namespace std;
 struct clients {
 	SOCKET cl1;
 	SOCKET cl2;
-};
+};// создание структуры для передачи двух сокетов в поток
 
 DWORD WINAPI serverReceive(void* p) {
 
-	clients * d = ((clients*)p);
+	clients * d = ((clients*)p);// преобразование указателя
 	char login[64] = { 0 };
 	char buffer[1024] = { 0 };
 	SOCKET client1 = d->cl1;
 	SOCKET client2 = d->cl2;
 
-	if (recv(client1, login, sizeof(login), 0) == SOCKET_ERROR) {
-		cout << "Ошибка, логин не получен" << WSAGetLastError() << endl;
+	if (recv(client1, login, sizeof(login), 0) == SOCKET_ERROR) { // прием логина
+		cout << "Ошибка, логин не получен" << WSAGetLastError() << endl; 
 		return -1;
 	}
-	if (send(client2, login, sizeof(buffer), 0) == SOCKET_ERROR) {
+	if (send(client2, login, sizeof(buffer), 0) == SOCKET_ERROR) { // отправка логина второму клиенту
 		cout << "Ошибка отправки данных " << WSAGetLastError() << endl;
 		return -1;
 	}
 	while (true) {
 
-		if (recv(client1, buffer, sizeof(buffer), 0) == SOCKET_ERROR) {
+		if (recv(client1, buffer, sizeof(buffer), 0) == SOCKET_ERROR) { // прием сообщения 
 
 			cout << "Ошбика принятия данных" << WSAGetLastError() << endl;
 			return -1;
 		}
-		if (strcmp(buffer, "Close_Dialog\n") == 0) {
+		if (strcmp(buffer, "Close_Dialog\n") == 0) { // проверка на отключения клиента
 			cout << "Произошло отключение клиента " << login << endl;
 			continue;
 		}
@@ -48,9 +48,9 @@ DWORD WINAPI serverReceive(void* p) {
 		buffer[strlen(buffer) - 1] = ' '; // убирание перевода строки для нормального вывода
 		if (strlen(buffer) != 0)
 		{
-			cout << "Клиент " << login << " - " << buffer << endl;
+			cout << "Клиент " << login << " - " << buffer << endl; // вывод сообщений от клиентов
 		}
-		if (send(client2, buffer, sizeof(buffer), 0) == SOCKET_ERROR) {
+		if (send(client2, buffer, sizeof(buffer), 0) == SOCKET_ERROR) { // отправка сообщения другому клиенту
 			cout << "Ошибка отправки данных " << WSAGetLastError() << endl;
 			return -1;
 		}

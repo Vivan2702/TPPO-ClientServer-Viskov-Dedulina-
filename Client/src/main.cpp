@@ -24,11 +24,11 @@ int main() {
 	HANDLE t1 = CreateThread(NULL, 0, clientReceive, &server, 0, &tid);
 	if (t1 == NULL) cout << "Ошибка создания потока" << GetLastError();
 	HANDLE t2 = CreateThread(NULL, 0, clientSend, &server, 0, &tid);
-	if (t2 == NULL) cout << "Ошибка создания потока" << GetLastError();
+	if (t2 == NULL) cout << "Ошибка создания потока" << GetLastError(); // создание потоков для общения с сервером
 
 	WaitForSingleObject(t1, INFINITE);
-	WaitForSingleObject(t2, INFINITE);
+	WaitForSingleObject(t2, INFINITE);// ожидание потоков
 
-	closesocket(server);
+	closesocket(server);// закрытие сокетов
 	WSACleanup();
 }
